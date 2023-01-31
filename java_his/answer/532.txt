@@ -1,0 +1,23 @@
+public int findPairs(int[] nums, int k) {
+        if (k < 0) {
+            return 0;
+        }
+        Arrays.sort(nums);
+        int start = 0, count = 0, prev = 0x7fffffff;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] - nums[start] > k || prev == nums[start]) {
+                // 当遇到一串相同数字的时候 那么只需要i不断前进即可
+                // 就是当差值大于k的时候 我们需要start进1 此时需要判断增长后的start是否等于i
+                // 只有相等的情况才需要i也进1 否则需要i--
+                if (++start != i) {
+                    i--;
+                }
+            } else if (nums[i] - nums[start] == k) {
+                // 定义一个起始指针start 随着i的增加找到差值为k的时候 start++, i++
+                // 当遇到差值为k的时候记录下prev = nums[start] 然后跳过所有等于prev的start
+                prev = nums[start++];
+                count++;
+            }
+        }
+        return count;
+    }

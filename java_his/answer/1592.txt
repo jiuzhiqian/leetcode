@@ -1,0 +1,41 @@
+    public String reorderSpaces(String text) {
+        int spaceCount = 0, index = 0, step, wordCount = 0;
+        boolean preIsChar = false;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == ' ') {
+                spaceCount++;
+                preIsChar = false;
+            } else {
+                if (!preIsChar) {
+                    wordCount++;
+                    preIsChar = true;
+                }
+            }
+        }
+        preIsChar = false;
+        StringBuilder sb = new StringBuilder();
+        step = wordCount > 1 ? spaceCount / (wordCount - 1) : spaceCount;
+        for (int i = 0; i < text.length(); i++) {
+            if (preIsChar) {
+                if (text.charAt(i) != ' ') {
+                    sb.append(text.charAt(i));
+                } else {
+                    while (spaceCount > 0 && index++ < step) {
+                        spaceCount--;
+                        sb.append(' ');
+                    }
+                    index = 0;
+                    preIsChar = false;
+                }
+            } else {
+                if (text.charAt(i) != ' ') {
+                    preIsChar = true;
+                    sb.append(text.charAt(i));
+                }
+            }
+        }
+        while (spaceCount-- > 0) {
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
