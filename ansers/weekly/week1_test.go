@@ -1,6 +1,7 @@
 package weekly
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"strconv"
@@ -21,8 +22,345 @@ func TestWeekly1(t *testing.T) {
 	//res := validWordSquare([]string{"abc", "b"})
 	//res := findPoisonedDuration([]int{1, 2}, 2)
 	//res := countBinarySubstrings("00110011")
-	res := findShortestSubArray([]int{2, 3, 2, 4, 6})
+	//res := findShortestSubArray([]int{2, 3, 2, 4, 6})
+	//res := anagramMappings([]int{12, 28, 46, 32, 50}, []int{50, 12, 32, 46, 28})
+	//res := rotateString("abcde", "cdeab")
+	//res := similarRGB("#09f166")
+	//res := largestTriangleArea([][]int{{0, 0}, {0, 1}, {0, 2}, {1, 0}, {2, 0}})
+	//res := uniqueMorseRepresentations([]string{"gin", "zen", "gig", "msg"})
+	//res := confusingNumber(11)
+	//res := fixedPoint([]int{-10, -5, 0, 3, 7})
+	//res := indexPairs("ababa", []string{"aba", "ab"})
+	//res := sumOfDigits([]int{99, 77, 33, 66, 55})
+	//res := highFive([][]int{{1, 91}, {1, 92}, {2, 93}, {2, 97}, {1, 60}, {2, 77}, {1, 65}, {1, 87}, {1, 100}, {2, 100}, {2, 76}})
+	//res := twoSumLessThanK([]int{254, 914, 110, 900, 147, 441, 209, 122, 571, 942, 136, 350, 160, 127, 178, 839, 201, 386, 462, 45, 735, 467, 153, 415, 875, 282, 204, 534, 639, 994, 284, 320, 865, 468, 1, 838, 275, 370, 295, 574, 309, 268, 415, 385, 786, 62, 359, 78, 854, 944}, 200)
+	//res := numberOfDays(2000, 2)
+	//res := removeVowels("leetcodeisacommunityforcoders")
+	//res := largestUniqueNumber([]int{5, 7, 3, 9, 4, 9, 8, 3, 1})
+	//res := isArmstrong(2)
+	res := isMajorityElement([]int{438885258, 438885258}, 438885258)
 	t.Log(res)
+}
+
+// 1150,GG,边界没处理好
+func isMajorityElement(nums []int, target int) bool {
+	mid := len(nums) >> 1
+	if nums[mid] != target {
+		return false
+	}
+	l, r, ll := mid-1, mid+1, len(nums)
+	for l >= 0 && r < ll && (nums[l] == target || nums[r] == target) {
+		if nums[l] == target {
+			l--
+		}
+		if nums[r] == target {
+			r++
+		}
+	}
+	return (r - l - 1) > ll>>1
+}
+
+// 1134
+func isArmstrong(n int) bool {
+	sum, oriN, cnt := float64(0), float64(n), 0.0
+	for n > 0 {
+		cnt++
+		n /= 10
+	}
+	n = int(oriN)
+	for n > 0 {
+		sum += math.Pow(float64(n%10), cnt)
+		n /= 10
+	}
+	return sum == oriN
+}
+
+// 1133
+func largestUniqueNumber(nums []int) int {
+	var arr [1000]int
+	for _, num := range nums {
+		arr[num]++
+	}
+	var ans = -1
+	for i, n := range arr {
+		if n == 1 {
+			ans = i
+		}
+	}
+	return ans
+}
+
+// 1119
+func removeVowels(s string) string {
+	var ans []byte
+	for i := 0; i < len(s); i++ {
+		if s[i] == 'a' || s[i] == 'e' || s[i] == 'i' || s[i] == 'o' || s[i] == 'u' {
+			continue
+		}
+		ans = append(ans, s[i])
+	}
+	return string(ans)
+}
+
+// 1118
+func numberOfDays(year int, month int) int {
+	arr := [12]int{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+	if month != 2 {
+		return arr[month-1]
+	}
+	if year%4 == 0 {
+		if year%100 != 0 {
+			arr[1]++
+		} else if year%400 == 0 {
+			arr[1]++
+		}
+	}
+	return arr[1]
+}
+
+// 1099
+func twoSumLessThanK(nums []int, k int) int {
+	sort.Ints(nums)
+	maxSum := -1
+	l, r := 0, len(nums)-1
+	for l < r {
+		//fmt.Println(l, r, nums[r], nums[l], maxSum)
+		if nums[l]+nums[r] >= k {
+			r--
+		} else {
+			if nums[l]+nums[r] > maxSum {
+				maxSum = nums[l] + nums[r]
+			}
+			l++
+		}
+	}
+	return maxSum
+}
+
+// 1086
+func highFive(items [][]int) [][]int {
+	var ans [][]int
+	sort.Slice(items, func(i, j int) bool {
+		if items[i][0] < items[j][0] {
+			return true
+		} else if items[i][0] == items[j][0] {
+			return items[i][1] > items[j][1]
+		} else {
+			return false
+		}
+	})
+	var currId = -1
+	for i := 0; i < len(items); i++ {
+		if items[i][0] != currId {
+			currId = items[i][0]
+			ans = append(ans, []int{currId, (items[i][1] + items[i+1][1] + items[i+2][1] + items[i+3][1] + items[i+4][1]) / 5})
+			i += 4
+		}
+	}
+	return ans
+}
+
+// 1085
+func sumOfDigits(nums []int) int {
+	minSum, minNum := 0, math.MaxInt
+	for _, num := range nums {
+		if num < minNum {
+			minNum = num
+		}
+	}
+	for minNum > 0 {
+		minSum += minNum % 10
+		minNum /= 10
+	}
+	return 1 - minSum&1
+}
+
+// 1065
+func indexPairs(text string, words []string) [][]int {
+	var ans [][]int
+	ll := len(text)
+	for i := 0; i < ll; i++ {
+		for _, word := range words {
+			if len(word)+i > ll {
+				continue
+			}
+			if text[i:len(word)+i] == word {
+				ans = append(ans, []int{i, len(word) + i - 1})
+			}
+		}
+	}
+	sort.Slice(ans, func(i, j int) bool {
+		if ans[i][0] < ans[j][0] {
+			return true
+		} else if ans[i][0] == ans[j][0] {
+			return ans[i][1] < ans[j][1]
+		} else {
+			return false
+		}
+	})
+	return ans
+}
+
+// 1064
+func fixedPoint(arr []int) int {
+	var ans = -1
+	l, r := 0, len(arr)-1
+	for l <= r {
+		m := (l + r + 1) >> 1
+		if arr[m] == m {
+			ans = m
+			r = m - 1
+		} else if arr[m] > m {
+			r = m - 1
+		} else {
+			l = m + 1
+		}
+	}
+	return ans
+}
+
+// 1056
+func confusingNumber(n int) bool {
+	arr := [10]int{0, 1, -1, -1, -1, -1, 9, -1, 8, 6}
+	resNum, oriNum := 0, n
+	for n > 0 {
+		tmp := n % 10
+		if arr[tmp] < 0 {
+			return false
+		}
+		resNum = resNum*10 + arr[tmp]
+		n /= 10
+	}
+	return resNum != oriNum
+}
+func confusingNumber2(n int) bool {
+	numStr := strconv.Itoa(n)
+	ll := len(numStr)
+	for _, cc := range numStr {
+		if cc == '0' || cc == '8' || cc == '1' || cc == '6' || cc == '9' {
+			continue
+		}
+		return false
+	}
+
+	for i, cc := range numStr {
+		j := ll - i - 1
+		if i > j {
+			break
+		}
+		if cc == '6' && numStr[j] == '9' {
+			continue
+		} else if cc == '9' && numStr[j] == '6' {
+			continue
+		} else if (cc == '0' || cc == '8' || cc == '1') && cc == int32(numStr[j]) {
+			continue
+		}
+		return true
+	}
+	return false
+}
+
+// 804
+func uniqueMorseRepresentations(words []string) int {
+	arr := []string{".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."}
+	var mm = map[string]bool{}
+	for _, word := range words {
+		var tmp string
+		for _, cc := range word {
+			tmp += arr[cc-'a']
+		}
+		mm[tmp] = true
+	}
+	return len(mm)
+}
+
+// 812 O(n2)的凸包不会不想看
+func triangleArea(x1, y1, x2, y2, x3, y3 int) float64 {
+	return math.Abs(float64(x1*y2+x2*y3+x3*y1-x1*y3-x2*y1-x3*y2)) / 2
+}
+
+func largestTriangleArea(points [][]int) (ans float64) {
+	for i, p := range points {
+		for j, q := range points[:i] {
+			for _, r := range points[:j] {
+				ans = math.Max(ans, triangleArea(p[0], p[1], q[0], q[1], r[0], r[1]))
+			}
+		}
+	}
+	return
+}
+
+// 800
+func similarRGB(color string) string {
+	var ans = "#"
+	for i := 1; i < len(color); i += 2 {
+		tmpNum := getInt(color[i])
+		tmpMin := math.MaxUint8
+		var currJ int
+		getJ := func() int {
+			if tmpNum == 0 {
+				return 0
+			} else {
+				return tmpNum - 1
+			}
+		}
+		for j := getJ(); j <= tmpNum+1; j++ {
+			if j < 0 || j > 15 {
+				continue
+			}
+			curr := (j-tmpNum)*16 + j - getInt(color[i+1])
+			if curr < 0 {
+				curr = -curr
+			}
+			if curr < tmpMin {
+				tmpMin = curr
+				//fmt.Println(j, j*16+j, tmpNum*16+getInt(color[i+1]), curr, tmpMin)
+				if j > 9 {
+					currJ = j - 10 + 'a'
+				} else {
+					currJ = j + '0'
+				}
+			}
+		}
+		ans += fmt.Sprintf("%c%c", currJ, currJ)
+	}
+	return ans
+}
+
+func getInt(cc uint8) int {
+	if cc <= '9' {
+		return int(cc - '0')
+	}
+	return int(cc - 'a' + 10)
+}
+
+// 796
+func rotateString(s string, goal string) bool {
+	if len(s) != len(goal) {
+		return false
+	}
+	ll := len(s)
+	goal += goal
+	for i := 0; i < ll; i++ {
+		if goal[i:ll+i] == s {
+			return true
+		}
+	}
+	return false
+}
+
+// 760
+func anagramMappings(nums1 []int, nums2 []int) []int {
+	mm := map[int][]int{}
+	for index, num := range nums2 {
+		mm[num] = append(mm[num], index)
+	}
+	var ans = make([]int, len(nums1))
+	for i := 0; i < len(nums1); i++ {
+		ans[i] = mm[nums1[i]][0]
+		mm[nums1[i]] = mm[nums1[i]][1:]
+	}
+	return ans
 }
 
 // 697
