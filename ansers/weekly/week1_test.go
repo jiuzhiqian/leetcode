@@ -38,8 +38,175 @@ func TestWeekly1(t *testing.T) {
 	//res := removeVowels("leetcodeisacommunityforcoders")
 	//res := largestUniqueNumber([]int{5, 7, 3, 9, 4, 9, 8, 3, 1})
 	//res := isArmstrong(2)
-	res := isMajorityElement([]int{438885258, 438885258}, 438885258)
+	//res := isMajorityElement([]int{438885258, 438885258}, 438885258)
+	//res := calculateTime("pqrstuvwxyzabcdefghijklmno", "leetcode")
+	//res := dietPlanPerformance([]int{6, 13, 8, 7, 10, 1, 12, 11}, 6, 5, 37)
+	//res := countLetters("aaaba")
+	//res := maxNumberOfApples([]int{900, 950, 800, 1000, 700, 800})
+	//res := arraysIntersection([]int{1, 2, 3, 4, 5}, []int{1, 2, 5, 7, 9}, []int{1, 3, 4, 5, 9})
+	//res := missingNumber([]int{7, 5, 3})
+	//res := transformArray([]int{2, 2, 1, 1, 1, 2, 2, 1})
+	res := toHexspeak("747823223228")
 	t.Log(res)
+}
+
+// 1271
+func toHexspeak(num string) string {
+	intNum, _ := strconv.Atoi(num)
+	arr := [16]byte{'O', 'I', 0, 0, 0, 0, 0, 0, 0, 0, 'A', 'B', 'C', 'D', 'E', 'F'}
+	var ans []byte
+	for intNum > 0 {
+		tmpMod := intNum % 16
+		if arr[tmpMod] == 0 {
+			return "ERROR"
+		}
+		ans = append([]byte{arr[tmpMod]}, ans...)
+		intNum /= 16
+	}
+	return string(ans)
+}
+
+// 1243
+func transformArray(arr []int) []int {
+	changed := false
+	pre := arr[0]
+	for i := 1; i < len(arr)-1; i++ {
+		if arr[i] > pre && arr[i] > arr[i+1] {
+			pre = arr[i]
+			arr[i]--
+			changed = true
+		} else if arr[i] < pre && arr[i] < arr[i+1] {
+			pre = arr[i]
+			arr[i]++
+			changed = true
+		} else {
+			pre = arr[i]
+		}
+	}
+	if !changed {
+		return arr
+	}
+	return transformArray(arr)
+}
+
+// 1228
+func missingNumber(arr []int) int {
+	curr := arr[1] - arr[0]
+	for i := 1; i < len(arr)-1; i++ {
+		if arr[i+1]-arr[i] == curr {
+			continue
+		} else if 2*curr == arr[i+1]-arr[i] {
+			return arr[i] + curr
+		} else {
+			return arr[i] - curr/2
+		}
+	}
+	return arr[0] - curr
+}
+
+// 1213
+func arraysIntersection(arr1 []int, arr2 []int, arr3 []int) []int {
+	a1, a2, a3, l1, l2, l3 := 0, 0, 0, len(arr1), len(arr2), len(arr3)
+	var ans []int
+	for a1 < l1 && a2 < l2 && a3 < l3 {
+		//fmt.Println(a1, arr1[a1], a2, arr2[a2], a3, arr3[a3])
+		if arr1[a1] == arr2[a2] && arr2[a2] == arr3[a3] {
+			ans = append(ans, arr1[a1])
+			a1++
+			a2++
+			a3++
+		} else if arr1[a1] < arr2[a2] || arr1[a1] < arr3[a3] {
+			a1++
+		} else if arr2[a2] < arr1[a1] || arr2[a2] < arr3[a3] {
+			a2++
+		} else {
+			a3++
+		}
+	}
+	return ans
+}
+
+// 1196
+func maxNumberOfApples(weight []int) int {
+	sort.Slice(weight, func(i, j int) bool {
+		return weight[i] < weight[j]
+	})
+	sum := 0
+	for i, w := range weight {
+		sum += w
+		if sum > 5000 {
+			return i
+		}
+	}
+	return len(weight)
+	/*sort.Ints(weight)
+	curr, cnt, maxWei := 0, 0, 5000
+	for _, wei := range weight {
+		curr += wei
+		if curr > maxWei {
+			break
+		}
+		cnt++
+	}
+	return cnt*/
+}
+
+// 1180
+func countLetters(s string) int {
+	pre, cnt, ans := s[0], 1, 0
+	for i := 1; i < len(s); i++ {
+		if s[i] == pre {
+			cnt++
+		} else {
+			ans += (cnt + 1) * cnt / 2
+			cnt = 1
+			pre = s[i]
+		}
+	}
+	ans += (cnt + 1) * cnt / 2
+	return ans
+}
+
+// 1176
+func dietPlanPerformance(calories []int, k int, lower int, upper int) int {
+	currKey, currSum, ans := 0, 0, 0
+	for i := 0; i < k; i++ {
+		currSum += calories[i]
+	}
+	if currSum > upper {
+		ans++
+	} else if currSum < lower {
+		ans--
+	}
+	for i := k; i < len(calories); i++ {
+		currSum += calories[i] - calories[currKey]
+		currKey++
+		if currSum > upper {
+			ans++
+		} else if currSum < lower {
+			ans--
+		}
+	}
+	return ans
+}
+
+// 1165
+func calculateTime(keyboard string, word string) int {
+	arr := [26]int{}
+	for i, cc := range keyboard {
+		arr[cc-'a'] = i
+	}
+	curr, ans := 0, 0
+	for _, cc := range word {
+		t := arr[cc-'a']
+		if t > curr {
+			ans += t - curr
+		} else {
+			ans += curr - t
+		}
+		curr = t
+	}
+	return ans
 }
 
 // 1150,GG,边界没处理好
