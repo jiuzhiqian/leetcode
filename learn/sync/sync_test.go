@@ -77,6 +77,7 @@ func TestDemo2(t *testing.T) {
 			sendCond.Wait()
 		}
 		t.Logf("sender [%d-%d]: letter send", id, index)
+		mailBox = 1
 		lock.Unlock()
 		recvCond.Broadcast()
 	}
