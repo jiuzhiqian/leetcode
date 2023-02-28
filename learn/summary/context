@@ -1,0 +1,2 @@
+Context值的函数。其中的WithCancel、WithDeadline和WithTimeout都是被用来基于给定的Context值产生可撤销的子值的。
+调用context.WithValue函数得到的Context值是不可撤销的。

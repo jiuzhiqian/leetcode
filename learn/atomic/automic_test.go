@@ -1,7 +1,9 @@
 package atomic
 
 import (
+	"errors"
 	"fmt"
+	"reflect"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -73,7 +75,6 @@ func forAndCAS2() {
 				break
 			}
 			newNum := currNum + 2
-			fmt.Println("new_num_1:", newNum)
 			time.Sleep(200 * time.Millisecond)
 			if atomic.CompareAndSwapInt32(&num, currNum, newNum) {
 				fmt.Printf("The number: %d [%d-%d]\n", newNum, id, i)
@@ -93,7 +94,6 @@ func forAndCAS2() {
 				break
 			}
 			newNum := currNum + 2
-			fmt.Println("new_num_2:", newNum)
 			time.Sleep(200 * time.Millisecond)
 			if atomic.CompareAndSwapInt32(&num, currNum, newNum) {
 				fmt.Printf("The number: %d [%d-%d]\n", newNum, id, i)
@@ -102,4 +102,29 @@ func forAndCAS2() {
 			}
 		}
 	}(2, max)
+	<-sign
+	<-sign
+}
+
+func TestDemo2(t *testing.T) {
+	var box atomic.Value
+	fmt.Println("copy box to box2.")
+	box2 := box
+	v1 := [...]int{1, 2, 3}
+	fmt.Printf("%v %s\n", v1, reflect.TypeOf(v1))
+	fmt.Printf("Store %v to box.\n", v1)
+	box.Store(v1)
+
+	v2 := "123"
+	box2.Store(v2)
+
+	box3 := box
+	v3 := 123
+	fmt.Println("box3:", box3.Load(), " v3:", v3)
+	//box3.Store(v3)
+	var box4 atomic.Value
+	v4 := errors.New("wrong")
+	fmt.Println("box4:", box4.Load(), " v4:", v4)
+	box4.Store(v4)
+
 }
